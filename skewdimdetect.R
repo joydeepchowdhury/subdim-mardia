@@ -127,3 +127,14 @@ parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .pack
         skewed_components = sn::rsn(n = n, xi = rep(0,length(alpha_vector)), omega = Omega_1, alpha = alpha_vector)
         symmetric_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_skew), Sigma = Omega_2)
         Data_temp = cbind(skewed_components, symmetric_components)
+      }else if (q_true_skew > 1 && q_true_skew < p){
+        skewed_components = sn::rmsn(n = n, xi = rep(0,length(alpha_vector)), Omega = Omega_1, alpha = alpha_vector)
+        symmetric_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_skew), Sigma = Omega_2)
+        Data_temp = cbind(skewed_components, symmetric_components)
+      }else if (q_true_skew == p){
+        skewed_components = sn::rmsn(n = n, xi = rep(0,length(alpha_vector)), Omega = Omega_1, alpha = alpha_vector)
+        Data_temp = skewed_components
+      }else{
+        stop('ERROR in q_true_skew!!')
+      }
+      
