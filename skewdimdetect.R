@@ -160,3 +160,18 @@ parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .pack
     }else{
       stop('ERROR in skew_or_kurt_or_both!!')
     }
+    
+    Mean = colMeans(Data)
+    Dispersion = var(Data)
+    
+    Data_centered = Data - matrix(Mean, byrow = TRUE, nrow = n, ncol = length(Mean))
+    
+    Matrix = Data_centered %*% solve(Dispersion) %*% t(Data_centered)
+    
+    skewness = sum(Matrix^3) / n^2
+    kurtosis = sum((diag(Matrix))^2) / n
+    
+    MS = (n * skewness) / 6
+    MK = (kurtosis - (p * (p+2))) / sqrt((8 * p * (p+2)) / n)
+    MS_chisquare_degree = (p * (p+1) * (p+2)) / 6
+    
