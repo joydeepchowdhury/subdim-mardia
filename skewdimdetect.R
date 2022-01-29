@@ -58,3 +58,44 @@ for (i in 1:allsamplenum){
 }
 if (count_index > 1)
   stop('ERROR!!!!')
+
+num_repl = 1000
+
+set.seed(seed = NULL)
+Seed_vector = sample(10000000, num_repl)
+
+require(foreach)
+require(doParallel)
+
+packagelist = c('MASS', 'sn')
+
+ncores = detectCores()
+cl = makeCluster(min(ncores, 120))
+registerDoParallel(cl)
+
+parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .packages = packagelist) %dopar%
+  {
+    seed = Seed_vector[index_replicate]
+    
+    if(!is.integer(seed))
+      stop(paste('ERROR!!!!', as.character(seed)))
+    set.seed(seed, kind = 'default', normal.kind = 'default')
+    
+    if (skew_or_kurt_or_both == 1){
+      if (q_true_skew == 0){
+        symmetric_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_skew), Sigma = Omega_2)
+        Data = symmetric_components
+      }else if (q_true_skew == 1){
+        skewed_components = sn::rsn(n = n, xi = rep(0,length(alpha_vector)), omega = Omega_1, alpha = alpha_vector)
+        symmetric_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_skew), Sigma = Omega_2)
+        Data = cbind(skewed_components, symmetric_components)
+      }else if (q_true_skew > 1 && q_true_skew < p){
+        skewed_components = sn::rmsn(n = n, xi = rep(0,length(alpha_vector)), Omega = Omega_1, alpha = alpha_vector)
+        symmetric_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_skew), Sigma = Omega_2)
+        Data = cbind(skewed_components, symmetric_components)
+      }else if (q_true_skew == p){
+        skewed_components = sn::rmsn(n = n, xi = rep(0,length(alpha_vector)), Omega = Omega_1, alpha = alpha_vector)
+        Data = skewed_components
+      }else{
+        stop('ERROR in q_true_skew!!')
+      }
