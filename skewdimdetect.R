@@ -138,3 +138,25 @@ parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .pack
         stop('ERROR in q_true_skew!!')
       }
       
+      if (q_true_kurt == 0){
+        normal_components = Data_temp
+        Data = normal_components
+      }else if (q_true_kurt == 1){
+        heavytail_components = Data_temp[, 1] / sqrt(rchisq(n, t_df) / t_df)
+        normal_components = Data_temp[, (q_true_kurt + 1):p]
+        Data = cbind(heavytail_components, normal_components)
+      }else if (q_true_kurt > 1 && q_true_kurt < p){
+        heavytail_components = Data_temp[, 1:q_true_kurt] /
+          matrix(sqrt(rchisq(n, t_df) / t_df), nrow = n, ncol = q_true_kurt, byrow = FALSE)
+        normal_components = Data_temp[, (q_true_kurt + 1):p]
+        Data = cbind(heavytail_components, normal_components)
+      }else if (q_true_kurt == p){
+        heavytail_components = Data_temp[, 1:q_true_kurt] /
+          matrix(sqrt(rchisq(n, t_df) / t_df), nrow = n, ncol = q_true_kurt, byrow = FALSE)
+        Data = heavytail_components
+      }else{
+        stop('ERROR in q_true_kurt!!')
+      }
+    }else{
+      stop('ERROR in skew_or_kurt_or_both!!')
+    }
