@@ -99,3 +99,31 @@ parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .pack
       }else{
         stop('ERROR in q_true_skew!!')
       }
+    }else if (skew_or_kurt_or_both == 2){
+      if (q_true_kurt == 0){
+        normal_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_kurt), Sigma = Omega_4)
+        Data = normal_components
+      }else if (q_true_kurt == 1){
+        heavytail_components = rnorm(n, mean = 0, sd = 1) / sqrt(rchisq(n, t_df) / t_df)
+        normal_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_kurt), Sigma = Omega_4)
+        Data = cbind(heavytail_components, normal_components)
+      }else if (q_true_kurt > 1 && q_true_kurt < p){
+        heavytail_components = MASS::mvrnorm(n = n, mu = rep(0, q_true_kurt), Sigma = Omega_3) /
+          matrix(sqrt(rchisq(n, t_df) / t_df), nrow = n, ncol = q_true_kurt, byrow = FALSE)
+        normal_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_kurt), Sigma = Omega_4)
+        Data = cbind(heavytail_components, normal_components)
+      }else if (q_true_kurt == p){
+        heavytail_components = MASS::mvrnorm(n = n, mu = rep(0, q_true_kurt), Sigma = Omega_3) /
+          matrix(sqrt(rchisq(n, t_df) / t_df), nrow = n, ncol = q_true_kurt, byrow = FALSE)
+        Data = heavytail_components
+      }else{
+        stop('ERROR in q_true_kurt!!')
+      }
+    }else if (skew_or_kurt_or_both == 3){
+      if (q_true_skew == 0){
+        symmetric_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_skew), Sigma = Omega_2)
+        Data_temp = symmetric_components
+      }else if (q_true_skew == 1){
+        skewed_components = sn::rsn(n = n, xi = rep(0,length(alpha_vector)), omega = Omega_1, alpha = alpha_vector)
+        symmetric_components = MASS::mvrnorm(n = n, mu = rep(0, p - q_true_skew), Sigma = Omega_2)
+        Data_temp = cbind(skewed_components, symmetric_components)
