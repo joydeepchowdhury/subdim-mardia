@@ -234,3 +234,14 @@ stopCluster(cl)
 indicesmax_m1 = as.vector(parallel_outputs[,1])
 indicesmax_centered_scaled_m1 = as.vector(parallel_outputs[,2])
 indicesmax_scaled_m1 = as.vector(parallel_outputs[,3])
+
+allsample_tally_m1 = mat.or.vec(allsamplenum, 1)
+allsample_tally_centered_scaled_m1 = mat.or.vec(allsamplenum, 1)
+allsample_tally_scaled_m1 = mat.or.vec(allsamplenum, 1)
+for (i in 1:allsamplenum){
+  allsample_tally_m1[i] = sum(i == indicesmax_m1) / length(indicesmax_m1)
+  allsample_tally_centered_scaled_m1[i] = mean(i == indicesmax_centered_scaled_m1)
+  allsample_tally_scaled_m1[i] = sum(i == indicesmax_scaled_m1) / length(indicesmax_scaled_m1)
+}
+
+print(cbind(allsample_tally_m1, allsample_tally_centered_scaled_m1, allsample_tally_scaled_m1, q_vector))
