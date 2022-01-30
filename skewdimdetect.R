@@ -200,3 +200,26 @@ parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .pack
       
       alpha_1 = (3/q) * ((m6 / (q + 2)) - (2 * m4) + (q * (q + 2)))
       alpha_2 = (6 * m6) / (q * (q + 2) * (q + 4))
+      
+      multiplicity_1 = q
+      multiplicity_2 = (q * (q - 1) * (q + 4)) / 6
+      
+      Var_b1 = ((2 * multiplicity_1 * alpha_1^2) + (2 * multiplicity_2 * alpha_2^2)) / (n^2)
+      
+      mean_m1[i] = ((multiplicity_1 * alpha_1) + (multiplicity_2 * alpha_2)) / n
+      
+      sd_m1[i] = sqrt(Var_b1)
+    }
+    
+    centered_scaled_m1 = abs((m1 - mean_m1) / sd_m1)
+    
+    scaled_m1 = m1 / sd_m1
+    
+    max_m1 = max(m1)
+    max_centered_scaled_m1 = max(centered_scaled_m1)
+    max_scaled_m1 = max(scaled_m1)
+    
+    indexmax_m1 = which(m1 == max_m1)
+    indexmax_centered_scaled_m1 = which(centered_scaled_m1 == max_centered_scaled_m1)
+    indexmax_scaled_m1 = which(scaled_m1 == max_scaled_m1)
+    
