@@ -255,3 +255,7 @@ barplot(allsample_tally_scaled_m1, names.arg = 1:allsamplenum, ylim = c(0,1),
         xlab = 'sample indices', ylab = 'proportion',
         main = paste('true index = ', index_true, ', n = ', n, ', \nalpha = (',
                      paste(alpha_vector, collapse = ', '), ')', sep = ''))
+barplot(allsample_tally_m1, names.arg = 1:allsamplenum, ylim = c(0,1),
+        xlab = 'sample indices', ylab = 'proportion',
+        main = paste('true index = ', index_true, ', n = ', n, ', \nalpha = (',
+                     paste(alpha_vector, collapse = ', '), ')', sep = ''))
