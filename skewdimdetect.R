@@ -245,3 +245,13 @@ for (i in 1:allsamplenum){
 }
 
 print(cbind(allsample_tally_m1, allsample_tally_centered_scaled_m1, allsample_tally_scaled_m1, q_vector))
+
+# par(mfrow = c(1,3))
+barplot(allsample_tally_centered_scaled_m1, names.arg = 1:allsamplenum, ylim = c(0,1),
+        xlab = 'sample indices', ylab = 'proportion',
+        main = paste('true index = ', index_true, ', n = ', n, ', \nalpha = (',
+                     paste(alpha_vector, collapse = ', '), ')', sep = ''))
+barplot(allsample_tally_scaled_m1, names.arg = 1:allsamplenum, ylim = c(0,1),
+        xlab = 'sample indices', ylab = 'proportion',
+        main = paste('true index = ', index_true, ', n = ', n, ', \nalpha = (',
+                     paste(alpha_vector, collapse = ', '), ')', sep = ''))
