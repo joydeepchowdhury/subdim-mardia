@@ -175,3 +175,28 @@ parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .pack
     MK = (kurtosis - (p * (p+2))) / sqrt((8 * p * (p+2)) / n)
     MS_chisquare_degree = (p * (p+1) * (p+2)) / 6
     
+    m1 = mat.or.vec(allsamplenum, 1)
+    mean_m1 = mat.or.vec(allsamplenum, 1)
+    sd_m1 = mat.or.vec(allsamplenum, 1)
+    for (i in 1:allsamplenum){
+      Data_i = Data[, allsampleindices[i,]]
+      if (is.vector(Data_i))
+        Data_i = matrix(Data_i, nrow = length(Data_i), ncol = 1)
+      
+      q = q_vector[i]
+      
+      Data_i_centered = Data_i - matrix(colMeans(Data_i), nrow = n, ncol = q, byrow = TRUE)
+      
+      Sigma_hat_i_inverse = solve(cov(Data_i))
+      
+      temp_matrix = Data_i_centered %*% solve(cov(Data_i), t(Data_i_centered))
+      
+      b1 = sum((temp_matrix)^3) / (n^2)
+      
+      m1[i] = b1
+      
+      m4 = mean((diag(temp_matrix))^2)
+      m6 = mean((diag(temp_matrix))^3)
+      
+      alpha_1 = (3/q) * ((m6 / (q + 2)) - (2 * m4) + (q * (q + 2)))
+      alpha_2 = (6 * m6) / (q * (q + 2) * (q + 4))
