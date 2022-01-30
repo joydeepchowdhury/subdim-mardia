@@ -223,3 +223,14 @@ parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .pack
     indexmax_centered_scaled_m1 = which(centered_scaled_m1 == max_centered_scaled_m1)
     indexmax_scaled_m1 = which(scaled_m1 == max_scaled_m1)
     
+    if (length(indexmax_m1) > 1 || length(indexmax_centered_scaled_m1) > 1 || length(indexmax_scaled_m1) > 1)
+      stop('Error!!!!')
+    
+    c(indexmax_m1, indexmax_centered_scaled_m1, indexmax_scaled_m1)
+  }
+
+stopCluster(cl)
+
+indicesmax_m1 = as.vector(parallel_outputs[,1])
+indicesmax_centered_scaled_m1 = as.vector(parallel_outputs[,2])
+indicesmax_scaled_m1 = as.vector(parallel_outputs[,3])
