@@ -42,3 +42,19 @@ if (skew_or_kurt_or_both %in% c(1, 3)){
 }else{
   stop('ERROR in skew_or_kurt_or_both!!')
 }
+
+index_true = 0
+count_index = 0
+for (i in 1:allsamplenum){
+  if (all(sampleindices_true == allsampleindices[i,])){
+    index_true = i
+    count_index = count_index + 1
+  }
+}
+if (count_index > 1)
+  stop('ERROR!!!!')
+
+num_repl = 1000
+
+set.seed(seed = NULL)
+Seed_vector = sample(10000000, num_repl)
