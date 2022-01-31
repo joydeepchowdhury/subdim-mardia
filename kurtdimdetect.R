@@ -58,3 +58,21 @@ num_repl = 1000
 
 set.seed(seed = NULL)
 Seed_vector = sample(10000000, num_repl)
+
+require(foreach)
+require(doParallel)
+
+packagelist = c('MASS', 'sn')
+
+ncores = detectCores()
+cl = makeCluster(min(ncores, 120))
+registerDoParallel(cl)
+
+parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .packages = packagelist) %dopar%
+  {
+    seed = Seed_vector[index_replicate]
+    
+    if(!is.integer(seed))
+      stop(paste('ERROR!!!!', as.character(seed)))
+    set.seed(seed, kind = 'default', normal.kind = 'default')
+    
