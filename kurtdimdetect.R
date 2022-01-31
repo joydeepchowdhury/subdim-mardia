@@ -26,3 +26,19 @@ for (q in 1:p){
 }
 
 q_vector = rowSums(allsampleindices)
+
+if (skew_or_kurt_or_both %in% c(1, 3)){
+  if (q_true_skew >= 0 && q_true_skew <= p){
+    sampleindices_true = c(rep(TRUE, q_true_skew), rep(FALSE, (p - q_true_skew)))
+  }else{
+    stop('ERROR in q_true_skew!!')
+  }
+}else if (skew_or_kurt_or_both == 2){
+  if (q_true_kurt >= 0 && q_true_kurt <= p){
+    sampleindices_true = c(rep(TRUE, q_true_kurt), rep(FALSE, (p - q_true_kurt)))
+  }else{
+    stop('ERROR in q_true_kurt!!')
+  }
+}else{
+  stop('ERROR in skew_or_kurt_or_both!!')
+}
