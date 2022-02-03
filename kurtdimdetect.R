@@ -155,4 +155,74 @@ parallel_outputs = foreach(index_replicate = 1:num_repl, .combine = rbind, .pack
     }else{
       stop('ERROR in skew_or_kurt_or_both!!')
     }
+    
+    m2 = mat.or.vec(allsamplenum, 1)
+    mean_m2 = mat.or.vec(allsamplenum, 1)
+    sd_m2 = mat.or.vec(allsamplenum, 1)
+    for (i in 1:allsamplenum){
+      Data_i = Data[, allsampleindices[i,]]
+      if (is.vector(Data_i))
+        Data_i = matrix(Data_i, nrow = length(Data_i), ncol = 1)
+      
+      q = q_vector[i]
+      
+      Data_i_centered = Data_i - matrix(colMeans(Data_i), nrow = n, ncol = q, byrow = TRUE)
+      
+      Sigma_hat_i_inverse = solve(cov(Data_i))
+      
+      diag_i = apply(Data_i_centered, 1, function(x) (t(x) %*% Sigma_hat_i_inverse %*% x))
+      
+      b_2 = mean((diag_i)^2)
+      m2[i] = b_2
+      
+      mean_m2[i] = q * (q + 2)
+      
+      sd_m2[i] = sqrt((8 * q * (q + 2)) / n)
+    }
+    
+    centered_scaled_m2 = abs((m2 - mean_m2) / sd_m2)
+    
+    max_centered_scaled_m2 = max(centered_scaled_m2)
+    
+    indexmax_centered_scaled_m2 = which(centered_scaled_m2 == max_centered_scaled_m2)
+    
+    if (length(indexmax_centered_scaled_m2) > 1)
+      stop('Error!!!!')
+    
+    c(indexmax_centered_scaled_m2)
   }
+
+stopCluster(cl)
+
+indicesmax_centered_scaled_m2 = as.vector(parallel_outputs)
+
+allsample_tally_centered_scaled_m2 = mat.or.vec(allsamplenum, 1)
+for (i in 1:allsamplenum){
+  allsample_tally_centered_scaled_m2[i] = mean(i == indicesmax_centered_scaled_m2)
+}
+
+if (whichplot == 'all'){
+  truesampleindices_q = c(1, 6, 16, 26, 31)
+  
+  # print(cbind(allsample_tally_centered_scaled_m2, q_vector))
+  
+  truesamleindex = truesampleindices_q[q_true_kurt]
+  barcolors = rep('pink', allsamplenum)
+  barcolors[truesamleindex] = 'green'
+  
+  barplot(allsample_tally_centered_scaled_m2, names.arg = 1:allsamplenum, ylim = c(0,1), col = barcolors,
+          xlab = 'sample indices', ylab = 'proportion',
+          main = paste('true index = ', index_true, ', n = ', n, ', t df = ', t_df, sep = ''))
+}else{
+  qsample_tally_centered_scaled_m2 = mat.or.vec(p, 1)
+  for (q in 1:p){
+    qsample_tally_centered_scaled_m2[q] = sum(allsample_tally_centered_scaled_m2[which(q_vector == q)])
+    
+    barcolors = rep('pink', p)
+    barcolors[q_true_kurt] = 'green'
+    
+    barplot(qsample_tally_centered_scaled_m2, names.arg = 1:p, ylim = c(0,1), col = barcolors,
+            xlab = 'sample indices', ylab = 'proportion',
+            main = paste('true index = ', index_true, ', n = ', n, ', t df = ', t_df, sep = ''))
+  }
+}
