@@ -31,3 +31,12 @@ for (q_true_kurt in 1:3){
     source("~/kurtdimdetect1.R")
   }
 }
+par(mfrow = c(3, 3))
+for (q_true_kurt in 4:p){
+  for (t_df in c(1, 5, 10)){
+    source("~/kurtdimdetect1.R")
+  }
+}
+q_true_kurt = 0
+source("~/kurtdimdetect1.R")
+
