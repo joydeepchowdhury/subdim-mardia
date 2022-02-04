@@ -18,3 +18,16 @@
 # }
 
 remove(list = ls())
+
+p = 5
+
+skew_or_kurt_or_both = 2
+
+n = 500
+
+par(mfrow = c(3, 3))
+for (q_true_kurt in 1:3){
+  for (t_df in c(1, 5, 10)){
+    source("~/kurtdimdetect1.R")
+  }
+}
